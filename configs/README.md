@@ -1,0 +1,173 @@
+# Config Library
+
+This directory contains reusable provisioning modules for CradleXC (`cxc`).
+Each config installs and configures one piece of software or one host
+behaviour that a `.cradle` scenario can attach to an instance.
+
+## Declaration and Usage
+
+Configs are declared on an instance in a `.cradle` scenario:
+
+```text
+config("<config-name>")
+```
+
+The content is resolved from the configured `config_dir` (a local folder or
+a git URL such as this repository).
+
+## Directory Layout
+
+```text
+configs/
+  <config>/
+    ansible/
+      <config>.j2   # Tera-rendered Ansible task list (required)
+    files/          # optional assets referenced by the template
+```
+
+Unlike heuristics, configs carry no `manifest.json` — a config is always
+exactly what's named in `config()`, with nothing implied about `os()` or
+other configs. Some configs ship a `files/` directory for binaries or other
+assets that package managers cannot provide; the rest install everything they
+need through package managers and require no extra assets.
+
+The `python-*-` dependency configs invoke `pip` and expect the target guest to
+have a usable package index. In an isolated OpenStack experiment, configure
+the backend's `pip_index_url` (and HTTP `pip_trusted_host` when applicable)
+instead of adding separate wheel assets merely because the range has no
+general Internet egress.
+
+## Legacy Aliases
+
+A handful of older config names are still accepted and transparently
+resolved to their current folder:
+
+| Legacy name | Resolves to |
+|-------------|-------------|
+| `ubuntu-focal-auditd` | `linux-auditd` |
+| `ubuntu-focal-mail` | `linux-mail` |
+| `ubuntu-focal-python3` | `linux-python3` |
+| `ubuntu-focal-smb` | `linux-smb` |
+| `ubuntu-focal-mysql` | `linux-mysql` |
+| `ubuntu-focal-apache2` | `linux-apache2` |
+| `ubuntu-focal-netcat` | `linux-netcat` |
+| `ubuntu-focal-docker` | `linux-docker` |
+| `win-custom-routing` | `win-routing` |
+
+## Built-in Configs (not in this repository)
+
+`linux-routing` and `win-routing` are handled entirely inside `cxc`'s own
+assembler — they exist as configs on an instance, but there is no
+`configs/linux-routing/` or `configs/win-routing/` folder here to fetch.
+
+## Available Configs
+
+### Linux — services & network
+
+| Config | Description |
+|--------|-------------|
+| [`linux-apache2`](./linux-apache2) | Installs and starts Apache HTTP Server |
+| [`linux-dns`](./linux-dns) | Installs and configures Bind9 as a DNS resolver/server |
+| [`linux-docker`](./linux-docker) | Installs Docker and its dependencies |
+| [`linux-mail`](./linux-mail) | Installs Bind9 and mail-related packages for a mail-server role |
+| [`linux-mysql`](./linux-mysql) | Installs and starts MySQL Server |
+| [`linux-netcat`](./linux-netcat) | Installs netcat |
+| [`linux-nmap`](./linux-nmap) | Installs nmap |
+| [`linux-ntp`](./linux-ntp) | Installs and configures Chrony as an NTP server |
+| [`linux-python3`](./linux-python3) | Ensures Python 3 is installed |
+| [`linux-router`](./linux-router) | Enables IP forwarding and NAT masquerade rules for a router/gateway instance |
+| [`linux-smb`](./linux-smb) | Installs and configures Samba (SMB file sharing) |
+| [`linux-ufw`](./linux-ufw) | Installs UFW and allows SSH |
+| [`linux-unzip`](./linux-unzip) | Installs unzip |
+| [`linux-vsftpd`](./linux-vsftpd) | Installs and configures vsftpd (FTP server) |
+| [`net-tools`](./net-tools) | Installs the `net-tools` package (`ifconfig`, `netstat`, ...) |
+| [`python3-pip`](./python3-pip) | Installs python3-pip |
+| [`python-modbus-tcp`](./python-modbus-tcp) | Installs the pinned pyModbusTCP library |
+| [`python-influxdb`](./python-influxdb) | Installs the pinned InfluxDB Python client |
+| [`python-snap7`](./python-snap7) | Installs the pinned python-snap7 library |
+
+### Linux — observability
+
+| Config | Description |
+|--------|-------------|
+| [`linux-auditd`](./linux-auditd) | Installs auditd with a bundled custom audit rules file |
+| [`linux-sysdig`](./linux-sysdig) | Installs sysdig from a vendored package release |
+| [`linux-tcpdump`](./linux-tcpdump) | Installs tcpdump plus a bundled capture script and service |
+
+### Windows — system & network
+
+| Config | Description |
+|--------|-------------|
+| [`win-allow-ports`](./win-allow-ports) | Opens specific inbound firewall ports (ICMP, FTP, ...) |
+| [`win-icmpv4`](./win-icmpv4) | Allows inbound ICMPv4 (ping) |
+| [`win-power-option`](./win-power-option) | Disables sleep and monitor timeout, keeping the instance always-on |
+| [`win-winrm`](./win-winrm) | Ensures WinRM is enabled and running |
+
+### Windows — tooling
+
+| Config | Description |
+|--------|-------------|
+| [`win-chocolatey`](./win-chocolatey) | Installs the Chocolatey package manager |
+| [`win-dotnet8`](./win-dotnet8) | Installs the .NET 8 SDK |
+| [`win-myl`](./win-myl) | Installs the `myl` Python package via pip |
+| [`win-nodejs`](./win-nodejs) | Installs Node.js |
+| [`win-pyenv`](./win-pyenv) | Installs pyenv-win and a Python version through it |
+| [`win-python`](./win-python) | Installs Python via Chocolatey |
+| [`win-python-runtime`](./win-python-runtime) | Extracts a shared Python 3.10 runtime under `C:\ProgramData\cxc` |
+| [`win-winrar`](./win-winrar) | Installs WinRAR |
+| [`python-modbus-tcp-win`](./python-modbus-tcp-win) | Installs pyModbusTCP into the shared Windows runtime |
+| [`python-influxdb-win`](./python-influxdb-win) | Installs the InfluxDB client into the shared Windows runtime |
+| [`python-snap7-win`](./python-snap7-win) | Installs python-snap7 into the shared Windows runtime |
+| [`python-wxpython-win`](./python-wxpython-win) | Installs wxPython into the shared Windows runtime |
+
+### Windows — observability
+
+| Config | Description |
+|--------|-------------|
+| [`win-audit`](./win-audit) | Configures the Windows advanced audit policy (logon/logoff, ...) |
+| [`win-pktmon`](./win-pktmon) | Deploys and configures the PKTMON packet-capture service |
+| [`win-sysmon`](./win-sysmon) | Installs Sysmon with a bundled configuration |
+
+### Cross-platform & decoy
+
+| Config | Description |
+|--------|-------------|
+| [`benign-firefox-win`](./benign-firefox-win) | Installs Firefox on Windows |
+| [`python-benign-mail-packages`](./python-benign-mail-packages) | Installs a benign set of Python mail-handling packages (Linux) |
+| [`python-benign-mail-packages-win`](./python-benign-mail-packages-win) | Installs a benign set of Python mail-handling packages (Windows) |
+| [`python-benign-web-packages`](./python-benign-web-packages) | Installs a benign set of Python web packages (Linux) |
+| [`python-benign-web-packages-win`](./python-benign-web-packages-win) | Installs a benign set of Python web packages (Windows) |
+| [`win-tellerApp`](./win-tellerApp) | Deploys a fake "FinCore Systems" banking decoy app as social-engineering/EDR bait |
+
+### Attacker / offensive
+
+| Config | Description |
+|--------|-------------|
+| [`attacker`](./attacker) | Installs a baseline attacker toolkit (nmap, netcat, curl, wget, python3/pip, Flask) |
+| [`agent-entry`](./agent-entry) | Marks the instance an autonomous AI agent starts from — installs reconnaissance, SSH/tunnelling (including sshpass), web/authentication testing, SMB/LDAP/Impacket, and scripting tools (see below). Distinct from `attacker`: a scenario's own hand-authored attacker VM may or may not be where an agent is meant to start; this config is the explicit, unambiguous signal for that, checked by name/config rather than guessed |
+| [`linux-msf`](./linux-msf) | Installs the Metasploit Framework |
+
+### Agent entry toolkit
+
+`config("agent-entry")` uses the guest's APT repositories; it does not add Kali
+repositories or require a Kali image. Ubuntu images need Universe enabled.
+Packages are installed during provisioning, before the range is sealed:
+
+| Purpose | Packages |
+|---------|----------|
+| Discovery and diagnostics | nmap, arp-scan, dnsutils, iproute2, iputils-ping, net-tools, traceroute, tcpdump |
+| Remote access and relays | openssh-client, sshpass, netcat-traditional, socat, proxychains4, tmux |
+| Web testing | curl, wget, gobuster, dirb (including its offline wordlists), sqlmap |
+| Authentication and protocols | hydra, john, smbclient, ldap-utils, python3-impacket |
+| Scripting and files | jq, python3, python3-pip, python3-venv, git, unzip |
+
+DIRB's wordlists are under `/usr/share/dirb/wordlists`. Distribution-packaged
+Impacket script names and locations vary; use `dpkg -L python3-impacket` to
+locate them. No proxy, tunnel, listener, or target credentials are configured
+by this module. Tool versions follow the guest distribution's repositories;
+use the same provisioned snapshot for compared runs.
+
+Updating this config does not install tools into existing guests. Refresh the
+content library and provision a fresh range before sealing and taking its
+baseline snapshot. Extra Python dependencies must also be installed before
+sealing; having pip available does not provide internet access during a run.

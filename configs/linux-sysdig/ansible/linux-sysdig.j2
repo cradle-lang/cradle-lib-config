@@ -1,0 +1,44 @@
+    # Pinned upstream release; the checksum makes the download reproducible and
+    # lets get_url skip the transfer when /tmp/sysdig.deb already matches.
+    - name: Download the pinned sysdig package
+      become: yes
+      get_url:
+        url: https://github.com/draios/sysdig/releases/download/0.39.0/sysdig-0.39.0-x86_64.deb
+        dest: /tmp/sysdig.deb
+        checksum: sha256:181fca1f3ea69a3ec16ccb66614f7f37b1f13a08b05fab2ad77f62dd53e9c476
+        mode: '0644'
+
+    - name: Install sysdig
+      become: yes
+      apt:
+        deb: /tmp/sysdig.deb
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Copy sysdig service
+      become: yes
+      copy:
+        content: |+
+          [Unit]
+          Description=Sysdig Monitoring
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=root
+          ExecStart=/usr/bin/sysdig -w /var/log/sysdig.scap
+          # ExecStart=/etc/systemd/system/linux_sysdig.sh
+          ExecStop=/bin/kill $MAINPID
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/sysdig.service
+
+    - name: Start sysdig service
+      become: yes
+      service:
+        name: sysdig
+        daemon_reload: yes
+        state: started
+        enabled: yes

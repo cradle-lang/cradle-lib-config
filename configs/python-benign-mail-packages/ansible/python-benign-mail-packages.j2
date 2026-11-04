@@ -1,0 +1,6 @@
+    - name: Install Python mail packages
+      become: yes
+      pip:
+        name:
+          - IMAPClient
+          - pyzmail36
