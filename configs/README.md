@@ -109,7 +109,6 @@ assembler — they exist as configs on an instance, but there is no
 |--------|-------------|
 | [`win-chocolatey`](./win-chocolatey) | Installs the Chocolatey package manager |
 | [`win-dotnet8`](./win-dotnet8) | Installs the .NET 8 SDK |
-| [`win-myl`](./win-myl) | Installs the `myl` Python package via pip |
 | [`win-nodejs`](./win-nodejs) | Installs Node.js |
 | [`win-pyenv`](./win-pyenv) | Installs pyenv-win and a Python version through it |
 | [`win-python`](./win-python) | Installs Python via Chocolatey |
@@ -128,7 +127,7 @@ assembler — they exist as configs on an instance, but there is no
 | [`win-pktmon`](./win-pktmon) | Deploys and configures the PKTMON packet-capture service |
 | [`win-sysmon`](./win-sysmon) | Installs Sysmon with a bundled configuration |
 
-### Cross-platform & decoy
+### Cross-platform
 
 | Config | Description |
 |--------|-------------|
@@ -137,7 +136,6 @@ assembler — they exist as configs on an instance, but there is no
 | [`python-benign-mail-packages-win`](./python-benign-mail-packages-win) | Installs a benign set of Python mail-handling packages (Windows) |
 | [`python-benign-web-packages`](./python-benign-web-packages) | Installs a benign set of Python web packages (Linux) |
 | [`python-benign-web-packages-win`](./python-benign-web-packages-win) | Installs a benign set of Python web packages (Windows) |
-| [`win-tellerApp`](./win-tellerApp) | Deploys a fake "FinCore Systems" banking decoy app as social-engineering/EDR bait |
 
 ### Attacker / offensive
 

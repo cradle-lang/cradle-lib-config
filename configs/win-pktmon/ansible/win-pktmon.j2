@@ -15,10 +15,9 @@
       when: not pktmon_exe_stat.stat.exists
 
     - name: Check whether the PKTMON service already exists
-      # Registry probe: sc create/open is access-denied for non-SYSTEM
-      # callers on hosts whose provisioning stripped SC_MANAGER_CREATE_
-      # SERVICE from the SCM SDDL (e.g. the TLO credservice_bait
-      # hardening), so probe the service key instead (same as Sysmon).
+      # Registry probe: sc create/open may be access-denied for non-SYSTEM
+      # callers when a scenario restricts SC_MANAGER_CREATE_SERVICE in the SCM
+      # SDDL, so probe the service key instead (same as Sysmon).
       win_shell: if (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Services\PktmonService') { exit 0 } else { exit 1 }
       register: pktmon_svc
       failed_when: false

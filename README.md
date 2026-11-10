@@ -9,6 +9,7 @@ configs/
     files/
 ```
 
-This repository currently contains the public subset of the former
-`cradle-lib` configs. It is independent of the heuristic and scenario
-libraries.
+This repository contains reusable configs that are intended to be safe to use
+from any scenario. Scenario-specific decoys and applications belong in the
+scenario library; once a component has been generalized and reviewed here, any
+scenario may reuse it.
